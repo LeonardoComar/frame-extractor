@@ -1,0 +1,43 @@
+{
+	"info": {
+		"_postman_id": "aebce493-8bf4-43f5-a34e-84e726c81568",
+		"name": "Frame Extractor",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39997933"
+	},
+	"item": [
+		{
+			"name": "Enviar vídeo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/Leonardo/Desktop/Fase 5/FIAP_DOTNET_NET1_23/FIAP_DOTNET_NET1_23/FIAPProcessaVideo/Marvel_DOTNET_CSHARP.mp4"
+						},
+						{
+							"key": "interval",
+							"value": "10",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}:{{port}}/process-video",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"process-video"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
