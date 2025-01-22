@@ -1,27 +1,11 @@
-version: '3.9'
-
 volumes:
   db_servicos_data:
-  localstack_data:
 networks:
-  fiap-store:
+  frame-extractor:
     external: false
 
 services:
-  localstack:
-    image: localstack/localstack
-    ports:
-      - "127.0.0.1:4566:4566"
-      - "127.0.0.1:4510-4559:4510-4559"
-    environment:
-      - DEBUG=${DEBUG-}
-      - LOCALSTACK_PERSISTENCE=1
-    volumes:
-      - "localstack_data:/var/lib/localstack"
-    networks:
-      - fiap-store
-
-  db-servicos:
+  db-frame-extractor:
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
     restart: on-failure
@@ -33,13 +17,17 @@ services:
       - db_servicos_data:/var/lib/mysql
       - ./migrations:/docker-entrypoint-initdb.d
     networks:
-      - fiap-store
+      - frame-extractor
 
-  frame-extractor:
-    build: frame-extractor/
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "8183:8080"
+      - "8180:8080"
+    volumes:
+      - .:/app
     depends_on:
-      - db-servicos
+      - db-frame-extractor
     networks:
-      - fiap-store
+      - frame-extractor
