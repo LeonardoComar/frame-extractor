@@ -27,13 +27,33 @@
 					]
 				},
 				"url": {
-					"raw": "{{baseUrl}}:{{port}}/process-video",
+					"raw": "{{baseUrl}}:{{port}}/api/process-video",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"port": "{{port}}",
 					"path": [
+						"api",
 						"process-video"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Teste",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}:{{port}}/api/test",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"test"
 					]
 				}
 			},
