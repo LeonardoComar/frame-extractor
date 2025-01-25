@@ -1,5 +1,5 @@
 # app/domain/models.py
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, EmailStr
 from fastapi import UploadFile
 import os
 
@@ -20,3 +20,17 @@ class ProcessVideoInput(BaseModel):
         if not filename.lower().endswith(".mp4"):
             raise ValueError("O arquivo deve ser do tipo .mp4")
         return file
+
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+
+class User(BaseModel):
+    username: str
+    email: EmailStr
+    hashed_password: str
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
