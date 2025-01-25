@@ -15,3 +15,10 @@
 ### Comando para gerar o token JWT
 
 * python -c "import secrets; print(secrets.token_urlsafe(32))"
+
+
+### Comando para verificar se as tabelas foram criadas no localstack
+
+* aws --endpoint-url=http://localhost:4566 dynamodb list-tables
+
+* aws --endpoint-url=http://localhost:4566 dynamodb scan --table-name users

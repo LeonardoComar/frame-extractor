@@ -2,6 +2,7 @@ from passlib.context import CryptContext
 from app.repository import users_db
 from app.domain.models import User
 from app.core.jwt import create_access_token
+from app.repository.dynamodb_repository import add_user
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -27,6 +28,8 @@ class AuthService:
         # Crie o objeto User com o hashed_password
         new_user = User(username=username, email=email, hashed_password=hashed_password)
         users_db.append(new_user)
+
+        add_user(new_user)
 
     def authenticate_user(self, username: str, password: str) -> str:
         # Procura o usuário pelo username
