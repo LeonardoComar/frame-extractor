@@ -1,6 +1,6 @@
 # app/api/routes.py
 from fastapi import APIRouter, HTTPException, UploadFile, Form, Depends
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from app.service.frame_processor_service import process_video
 from app.service.auth_service import AuthService
 from app.core.auth import get_current_user
@@ -17,26 +17,22 @@ async def process_video_route(
     current_user: dict = Depends(get_current_user),
 ):
     try:
-        # Validação usando o modelo
-        input_data = ProcessVideoInput(file=file, interval=interval)
+        # Obter o username do usuário autenticado
+        username = current_user.get("sub", "anonymous")
 
-        # Processar o vídeo
-        zip_path = process_video(input_data.file, input_data.interval)
+        # Processar o vídeo e fazer upload para o S3
+        s3_url = process_video(file, interval, username)
 
-        # Mover o arquivo ZIP para um local fixo
-        final_zip_path = "/app/frames.zip"
-        shutil.copy(zip_path, final_zip_path)
-
-        # Retornar o arquivo ZIP
-        return FileResponse(
-            final_zip_path,
-            filename="frames.zip",
-            media_type="application/zip",
+        # Retornar o URL do arquivo salvo no S3
+        return JSONResponse(
+            content={"message": "Arquivo processado e salvo com sucesso!", "file_url": s3_url},
+            status_code=200,
         )
     except HTTPException as e:
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+
 
 @router.post("/register")
 async def register_user(user: UserCreate):

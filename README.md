@@ -20,3 +20,11 @@
 * aws --endpoint-url=http://localhost:4566 dynamodb list-tables
 
 * aws --endpoint-url=http://localhost:4566 dynamodb scan --table-name users
+
+### Comando para criar Bucket S3
+
+* aws --endpoint-url=http://localhost:4566 s3 mb s3://frame-extractor
+
+* aws s3 ls s3://frames-bucket --recursive --endpoint-url=http://localhost:4566
+
+

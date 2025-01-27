@@ -1,5 +1,4 @@
 from passlib.context import CryptContext
-from app.repository import users_db
 from app.domain.models import User
 from app.core.jwt import create_access_token
 from app.repository.dynamodb_repository import add_user, get_user_by_username, get_all_users, update_user
