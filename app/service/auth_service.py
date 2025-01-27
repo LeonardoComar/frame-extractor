@@ -2,7 +2,7 @@ from passlib.context import CryptContext
 from app.repository import users_db
 from app.domain.models import User
 from app.core.jwt import create_access_token
-from app.repository.dynamodb_repository import add_user
+from app.repository.dynamodb_repository import add_user, get_user_by_username, get_all_users, update_user
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -16,27 +16,49 @@ class AuthService:
         return pwd_context.verify(plain_password, hashed_password)
 
     def create_user(self, username: str, password: str, email: str):
-        # Verifica se o usuário já existe
-        if any(user.email == email for user in users_db):
-            raise ValueError("Email já está em uso")
-        if any(user.username == username for user in users_db):
+        # Busca o usuário existente pelo username
+        existing_user = get_user_by_username(username)
+        
+        # Verifica se o username já está em uso
+        if existing_user:
             raise ValueError("Usuário já está em uso")
+        
+        # Verifica se o email já está em uso (somente se o usuário foi encontrado)
+        if existing_user and existing_user.get("email") == email:
+            raise ValueError("Email já está em uso")
 
         # Gere o hashed_password
         hashed_password = self.get_password_hash(password)
 
         # Crie o objeto User com o hashed_password
         new_user = User(username=username, email=email, hashed_password=hashed_password)
-        users_db.append(new_user)
-
+        
+        # Adicione o usuário no DynamoDB
         add_user(new_user)
 
     def authenticate_user(self, username: str, password: str) -> str:
-        # Procura o usuário pelo username
-        user = next((u for u in users_db if u.username == username), None)
-        if not user or not self.verify_password(password, user.hashed_password):
+        # Procura o usuário pelo username no DynamoDB
+        user = get_user_by_username(username)
+        if not user or not self.verify_password(password, user.get("password")):
             raise ValueError("Credenciais inválidas")
         
         # Gera o token JWT
-        token = create_access_token(data={"sub": user.username})
+        token = create_access_token(data={"sub": user["username"]})
         return token
+    
+    def get_all_users(self):
+        return get_all_users()
+    
+    def update_user_status(self, username: str, status: str):
+        # Verificar se o status é válido
+        if status not in {"active", "inactive"}:
+            raise ValueError("Status deve ser 'active' ou 'inactive'")
+
+        # Buscar o usuário
+        user = get_user_by_username(username)
+        if not user:
+            raise ValueError(f"Usuário {username} não encontrado")
+
+        # Atualizar o status
+        user["status"] = status
+        update_user(username, user)

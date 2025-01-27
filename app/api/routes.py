@@ -55,3 +55,34 @@ async def login_user(user: UserLogin):
         return {"access_token": token, "token_type": "bearer"}
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e))
+    
+@router.get("/users", dependencies=[Depends(get_current_user)])
+async def list_users():
+    try:
+        # Obter a lista de usuários
+        users = auth_service.get_all_users()
+        return users
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+    
+@router.post("/users/{username}/activate", dependencies=[Depends(get_current_user)])
+async def activate_user(username: str):
+    try:
+        # Ativar o usuário
+        auth_service.update_user_status(username, "active")
+        return {"message": f"Usuário {username} ativado com sucesso"}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+    
+@router.post("/users/{username}/deactivate", dependencies=[Depends(get_current_user)])
+async def deactivate_user(username: str):
+    try:
+        # Inativar o usuário
+        auth_service.update_user_status(username, "inactive")
+        return {"message": f"Usuário {username} inativado com sucesso"}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")

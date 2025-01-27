@@ -8,9 +8,7 @@
 
 * docker run -d --name video-frame-api-container -p 8080:8080 video-frame-api
 
-* docker-compose build
-
-* docker-compose up
+* docker-compose up --build
 
 ### Comando para gerar o token JWT
 

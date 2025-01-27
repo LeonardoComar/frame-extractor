@@ -67,6 +67,32 @@ def add_user(user: User):
         Item={
             'username': user_data['username'],
             'email': user_data['email'],
-            'password': user_data['hashed_password'],  # Use o hashed_password
+            'password': user_data['hashed_password'],
+            'status': user_data['status'],
         }
     )
+
+# Função para buscar um usuário pelo username
+def get_user_by_username(username: str):
+    table = get_user_table()
+    
+    try:
+        response = table.get_item(Key={'username': username})
+        
+        # Verifica se o item foi encontrado
+        if 'Item' in response:
+            return response['Item']  # Retorna os dados do usuário
+        else:
+            return None  # Retorna None caso o usuário não exista
+    except ClientError as e:
+        print(f"Erro ao buscar o usuário: {e}")
+        return None
+    
+def get_all_users():
+    table = get_user_table()
+    response = table.scan()
+    return response.get("Items", [])
+
+def update_user(username: str, updated_user: dict):
+    table = get_user_table()
+    table.put_item(Item=updated_user)
