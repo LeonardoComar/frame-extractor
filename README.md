@@ -27,12 +27,17 @@
 
 * aws s3 ls s3://frames-bucket --recursive --endpoint-url=http://localhost:4566
 
+### Executar os testes
+
+* coverage run -m pytest  # Executa os testes
+* coverage report         # Exibe relatório no terminal
+* coverage html           # Gera relatório HTML detalhado
 
 ### o que falta
 * Implementar testes
 * K8s para duplicação de VM
+* github CI/CD
 * Criptografia de e-mail
 * Permissões de usuário
-* Testes pra garantir que um usuário não acessa as pastas/arquivos de outro
 * Documentação
 * Documentação API

@@ -166,6 +166,30 @@
 			"item": [
 				{
 					"name": "Gerar Frames",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Capturar a resposta JSON\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"// Extrair o nome do arquivo da URL\r",
+									"const fileUrl = response.file_url;\r",
+									"const filename = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);\r",
+									"\r",
+									"// Salvar a variável de ambiente\r",
+									"pm.environment.set(\"filename\", filename);\r",
+									"\r",
+									"// Log para conferência\r",
+									"console.log(\"Arquivo salvo:\", filename);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -208,15 +232,52 @@
 					"name": "Listar Frames do Usuário",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}:{{port}}/api/{{username}}/list-frame-archives",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"{{username}}",
+								"list-frame-archives"
+							]
+						}
 					},
 					"response": []
 				},
 				{
-					"name": "Apagar Frames",
+					"name": "Apagar Frame do Usuário",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}:{{port}}/api/{{username}}/delete-frame-archive/{{filename}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"{{username}}",
+								"delete-frame-archive",
+								"{{filename}}"
+							]
+						}
 					},
 					"response": []
 				}

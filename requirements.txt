@@ -11,3 +11,10 @@ python-jose==3.3.0
 pydantic[email]
 python-dotenv
 pydantic-settings==2.7.1
+coverage==7.6.10
+pytest==8.3.4
+pytest-cov==4.1.0
+pytest-asyncio==0.25.3
+pytest-mock==3.14.0
+httpx==0.28.1
+moto[s3]==5.0.6
