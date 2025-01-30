@@ -6,6 +6,7 @@ import uuid
 from tempfile import TemporaryDirectory
 from fastapi import HTTPException
 from app.service.s3_service import upload_to_s3
+from app.core.config import settings
 
 def process_video(file, interval, username):
     try:
@@ -42,9 +43,9 @@ def process_video(file, interval, username):
                     zipf.write(os.path.join(frames_dir, frame), arcname=frame)
 
             # Fazer upload do arquivo .zip para o S3
-            bucket_name = os.getenv("AWS_S3_BUCKET_NAME", "frames-bucket")
+            # bucket_name = settings.AWS_S3_BUCKET_NAME
             object_key = f"{username}/{zip_filename}"
-            file_url = upload_to_s3(zip_path, object_key, bucket_name)
+            file_url = upload_to_s3(zip_path, object_key)
 
             # Retornar o URL do arquivo salvo
             return file_url

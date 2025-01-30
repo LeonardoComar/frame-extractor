@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api.routes import router as api_router
+from app.api.application_routes import router as api_router
 from app.repository.dynamodb_repository import create_users_table
 
 async def lifespan(app: FastAPI):

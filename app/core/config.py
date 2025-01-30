@@ -1,13 +1,23 @@
-import os
-from datetime import timedelta
+from pydantic_settings import BaseSettings
 
-class Settings:
-    SECRET_KEY = os.getenv("SECRET_KEY")
-    ALGORITHM = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES = 30  # Tempo de expiração do token
-    DYNAMODB_ENDPOINT = os.getenv('DYNAMODB_ENDPOINT', 'http://localhost:4566')  # Endpoint do LocalStack
-    AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID', 'test')
-    AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY', 'test')
-    AWS_DEFAULT_REGION = os.getenv('AWS_DEFAULT_REGION', 'us-east-1')
+class Settings(BaseSettings):
+    # Configurações de Autenticação
+    SECRET_KEY: str
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
+    # Configurações AWS
+    DYNAMODB_ENDPOINT: str
+    AWS_S3_BUCKET_NAME: str
+    AWS_S3_ENDPOINT: str
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
+    AWS_DEFAULT_REGION: str
+    AWS_S3_PUBLIC_URL: str
+
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+
+# Cria uma instância das configurações
 settings = Settings()

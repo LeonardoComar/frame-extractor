@@ -23,8 +23,19 @@
 
 ### Comando para criar Bucket S3
 
-* aws --endpoint-url=http://localhost:4566 s3 mb s3://frame-extractor
+* aws --endpoint-url=http://localhost:4566 s3 mb s3://frames-bucket
 
 * aws s3 ls s3://frames-bucket --recursive --endpoint-url=http://localhost:4566
 
 
+### o que falta
+* Configurar o arquivo settings pra pegar no .env
+* Separar as rotas
+* Listar frames especificos de um usuario e salvar mais de um frame pra um mesmo usuario
+* Implementar testes
+* K8s para duplicação de VM
+* Criptografia de e-mail
+* Permissões de usuário
+* Testes pra garantir que um usuário não acessa as pastas de outro
+* Documentação
+* Documentação API
