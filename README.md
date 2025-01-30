@@ -29,13 +29,10 @@
 
 
 ### o que falta
-* Configurar o arquivo settings pra pegar no .env
-* Separar as rotas
-* Listar frames especificos de um usuario e salvar mais de um frame pra um mesmo usuario
 * Implementar testes
 * K8s para duplicação de VM
 * Criptografia de e-mail
 * Permissões de usuário
-* Testes pra garantir que um usuário não acessa as pastas de outro
+* Testes pra garantir que um usuário não acessa as pastas/arquivos de outro
 * Documentação
 * Documentação API
