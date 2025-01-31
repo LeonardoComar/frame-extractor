@@ -50,3 +50,8 @@ async def deactivate_user(username: str):
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+    
+# Rota protegida para os testes
+@router.get("/protected-route", dependencies=[Depends(get_current_user)])
+async def protected_route(user=Depends(get_current_user)):
+    return {"message": "Acesso autorizado", "user": user}

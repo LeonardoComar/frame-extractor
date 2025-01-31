@@ -29,9 +29,10 @@
 
 ### Executar os testes
 
-* coverage run -m pytest  # Executa os testes
-* coverage report         # Exibe relatório no terminal
-* coverage html           # Gera relatório HTML detalhado
+* pytest --cov=app app/tests/
+
+* pytest app/tests -v --cov=app --cov-report=html
+
 
 ### o que falta
 * Implementar testes
