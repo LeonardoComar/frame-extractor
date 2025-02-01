@@ -1,7 +1,7 @@
 import boto3
 import os
 from app.core.config import settings
-from app.domain.models import User
+from app.domain.user_model import User
 from botocore.exceptions import ClientError
 
 # Configuração do DynamoDB

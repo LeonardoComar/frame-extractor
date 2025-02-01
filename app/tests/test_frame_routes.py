@@ -61,7 +61,7 @@ def test_process_video_service_error(client, mock_process_video):
     files = {"file": ("test.mp4", b"content", "video/mp4")}
     response = client.post("/api/process-video", files=files, data={"interval": 5})
     assert response.status_code == 500
-    assert "An error occurred" in response.json()["detail"]
+    assert "Erro interno: Erro catastrófico" in response.json()["detail"]
 
 def test_process_video_unauthorized():
     # Teste sem mock de autenticação

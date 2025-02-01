@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.service.auth_service import AuthService
 from app.core.auth import get_current_user
-from app.domain.models import UserCreate, UserLogin
+from app.domain.user_model import UserCreate, UserLogin
 
 router = APIRouter()
 auth_service = AuthService()

@@ -4,18 +4,18 @@ from fastapi.responses import JSONResponse
 from app.service.frame_processor_service import process_video
 from app.service.s3_service import list_user_frame_archives, delete_s3_file
 from app.core.auth import get_current_user
+from app.domain.process_video_model import ProcessVideoInput
 
 router = APIRouter()
 
 @router.post("/process-video")
 async def process_video_route(
-    file: UploadFile,
-    interval: int = Form(...),
+    process_input: ProcessVideoInput = Depends(ProcessVideoInput.as_form),
     current_user: dict = Depends(get_current_user),
 ):
     try:
         username = current_user.get("sub", "anonymous")
-        s3_url = process_video(file, interval, username)
+        s3_url = process_video(process_input.file, process_input.interval, username)
         return JSONResponse(
             content={"message": "Arquivo processado e salvo com sucesso!", "file_url": s3_url},
             status_code=200,
@@ -23,7 +23,7 @@ async def process_video_route(
     except HTTPException as e:
         raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
     
 @router.get("/{username}/list-frame-archives")
 async def list_frame_archives_route(

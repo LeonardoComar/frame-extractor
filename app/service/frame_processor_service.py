@@ -49,5 +49,11 @@ def process_video(file, interval, username):
 
             # Retornar o URL do arquivo salvo
             return file_url
+    except HTTPException as e:
+        # Re-passando exceções HTTP específicas
+        raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ocorreu um erro: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro durante o processamento: {str(e)}"
+        )
