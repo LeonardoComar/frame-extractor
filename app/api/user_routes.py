@@ -1,7 +1,7 @@
 # app/api/user_routes.py
 from fastapi import APIRouter, Depends, HTTPException
 from app.service.auth_service import AuthService
-from app.core.auth import get_current_user
+from app.core.auth import get_current_user, get_admin_user
 from app.domain.user_model import UserCreate, UserLogin
 
 router = APIRouter()
@@ -23,7 +23,7 @@ async def login_user(user: UserLogin):
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e))
 
-@router.get("/users", dependencies=[Depends(get_current_user)])
+@router.get("/users", dependencies=[Depends(get_admin_user)])
 async def list_users():
     try:
         users = auth_service.get_all_users()
@@ -31,7 +31,7 @@ async def list_users():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
-@router.post("/users/{username}/activate", dependencies=[Depends(get_current_user)])
+@router.post("/users/{username}/activate", dependencies=[Depends(get_admin_user)])
 async def activate_user(username: str):
     try:
         auth_service.update_user_status(username, "active")
@@ -41,7 +41,7 @@ async def activate_user(username: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
-@router.post("/users/{username}/deactivate", dependencies=[Depends(get_current_user)])
+@router.post("/users/{username}/deactivate", dependencies=[Depends(get_admin_user)])
 async def deactivate_user(username: str):
     try:
         auth_service.update_user_status(username, "inactive")

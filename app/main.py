@@ -1,7 +1,9 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 from app.api.application_routes import router as api_router
 from app.repository.dynamodb_repository import create_users_table
 
+@asynccontextmanager
 async def lifespan(app: FastAPI):
     # Criar a tabela ao iniciar
     create_users_table()

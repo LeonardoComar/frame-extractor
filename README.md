@@ -34,9 +34,9 @@
 
 
 ### o que falta
+* Permissões de usuário (criar função ou tipo. Criar usuário admin e definir os demais como basic, premium)
+* criar o bucket automaticamente
 * Implementar testes
-* Permissões de usuário
-* Criptografia de e-mail
 * K8s para duplicação de VM
 * github CI/CD
 * Documentação

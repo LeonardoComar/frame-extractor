@@ -69,6 +69,7 @@ def add_user(user: User):
             'email': user_data['email'],
             'password': user_data['hashed_password'],
             'status': user_data['status'],
+            'role': user_data['role'],
         }
     )
 

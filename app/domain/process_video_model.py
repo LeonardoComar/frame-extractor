@@ -1,7 +1,7 @@
 # app/domain/process_video_model.py
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, ValidationError
 from fastapi import UploadFile, File, Form
-from typing import Annotated, Optional
+from typing import Annotated
 from fastapi.exceptions import HTTPException
 
 class ProcessVideoInput(BaseModel):

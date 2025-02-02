@@ -4,7 +4,8 @@ class UserCreate(BaseModel):
     username: str
     email: EmailStr
     password: str
-    status: str = Field(default='active')  # Valor padrão para status
+    status: str = Field(default='active')
+    role: str = Field(default='user_level_1')
 
     # Validação do campo status
     @field_validator("status")
@@ -18,8 +19,9 @@ class User(BaseModel):
     username: str
     email: EmailStr
     hashed_password: str
-    status: str = Field(default='active')  # Valor padrão para status
-
+    status: str = Field(default='active')
+    role: str = Field(default='user_level_1')
+    
     # Validação do campo status
     @field_validator("status")
     @classmethod
