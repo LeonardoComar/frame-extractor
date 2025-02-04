@@ -3,6 +3,7 @@ import os
 from app.core.config import settings
 from app.domain.user_model import User
 from botocore.exceptions import ClientError
+from boto3.dynamodb.conditions import Attr
 
 # Configuração do DynamoDB
 dynamodb = boto3.resource(
@@ -87,6 +88,21 @@ def get_user_by_username(username: str):
             return None  # Retorna None caso o usuário não exista
     except ClientError as e:
         print(f"Erro ao buscar o usuário: {e}")
+        return None
+    
+def get_user_by_email(email: str):
+    table = get_user_table()
+    try:
+        response = table.scan(
+            FilterExpression=Attr('email').eq(email)
+        )
+        items = response.get("Items", [])
+        if items:
+            return items[0]  # Retorna o primeiro usuário que corresponder ao e-mail
+        else:
+            return None
+    except ClientError as e:
+        print(f"Erro ao buscar usuário por email: {e}")
         return None
     
 def get_all_users():

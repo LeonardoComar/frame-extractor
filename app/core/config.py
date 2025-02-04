@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     AWS_SECRET_ACCESS_KEY: str
     AWS_DEFAULT_REGION: str
     AWS_S3_PUBLIC_URL: str
+    AWS_SES_ENDPOINT: str
+    FRONTEND_URL: str
 
     class Config:
         env_file = ".env"

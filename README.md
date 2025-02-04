@@ -25,6 +25,10 @@
 
 * aws s3 ls s3://frames-bucket --recursive --endpoint-url=http://localhost:4566
 
+### Comando para registar o e-mail no SES
+
+* aws ses verify-email-identity --email-address noreply@frameextractor.com --endpoint-url http://localhost:4566
+
 
 ### Executar os testes
 
@@ -34,8 +38,6 @@
 
 
 ### o que falta
-* Permissões de usuário (criar função ou tipo. Criar usuário admin e definir os demais como basic, premium)
-* criar o bucket automaticamente
 * Implementar testes
 * K8s para duplicação de VM
 * github CI/CD

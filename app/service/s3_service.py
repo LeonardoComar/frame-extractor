@@ -1,5 +1,4 @@
 # app/service/s3_service.py
-import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 from fastapi import HTTPException
 from app.core.config import settings  # Importação das configurações centralizadas

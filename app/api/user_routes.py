@@ -1,8 +1,8 @@
 # app/api/user_routes.py
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from app.service.auth_service import AuthService
 from app.core.auth import get_current_user, get_admin_user
-from app.domain.user_model import UserCreate, UserLogin
+from app.domain.user_model import UserCreate, UserLogin, PasswordResetRequest, PasswordReset
 
 router = APIRouter()
 auth_service = AuthService()
@@ -55,3 +55,30 @@ async def deactivate_user(username: str):
 @router.get("/protected-route", dependencies=[Depends(get_current_user)])
 async def protected_route(user=Depends(get_current_user)):
     return {"message": "Acesso autorizado", "user": user}
+
+# ------------------------
+# Rotas para recuperação de senha
+# ------------------------
+
+@router.post("/forgot-password")
+async def forgot_password(request: PasswordResetRequest, background_tasks: BackgroundTasks):
+    try:
+        auth_service.send_password_reset_email(request.email, background_tasks)
+        return {"message": "Email para recuperação de senha enviado com sucesso"}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+
+@router.post("/reset-password")
+async def reset_password(data: PasswordReset):
+    """
+    Recebe o token e a nova senha e atualiza a senha do usuário.
+    """
+    try:
+        auth_service.reset_password(data.token, data.new_password)
+        return {"message": "Senha redefinida com sucesso"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
