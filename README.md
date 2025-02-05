@@ -25,6 +25,7 @@
 
 * aws s3 ls s3://frames-bucket --recursive --endpoint-url=http://localhost:4566
 
+
 ### Comando para registar o e-mail no SES
 
 * aws ses verify-email-identity --email-address noreply@frameextractor.com --endpoint-url http://localhost:4566

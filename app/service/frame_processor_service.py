@@ -6,9 +6,10 @@ import uuid
 from tempfile import TemporaryDirectory
 from fastapi import HTTPException
 from app.service.s3_service import upload_to_s3
-from app.core.config import settings
+from app.service.email_ses_service import send_file_url_email_ses
+from app.repository.dynamodb_repository import get_user_by_username
 
-def process_video(file, interval, username):
+def process_video(file, interval, username, background_tasks):
     try:
         with TemporaryDirectory() as temp_dir:
             # Salvar o vídeo temporariamente
@@ -46,6 +47,10 @@ def process_video(file, interval, username):
             # bucket_name = settings.AWS_S3_BUCKET_NAME
             object_key = f"{username}/{zip_filename}"
             file_url = upload_to_s3(zip_path, object_key)
+
+            user = get_user_by_username(username)
+
+            background_tasks.add_task(send_file_url_email_ses, user["email"], user["username"], file_url)
 
             # Retornar o URL do arquivo salvo
             return file_url

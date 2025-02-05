@@ -1,5 +1,5 @@
 # app/api/frame_routes.py
-from fastapi import APIRouter, UploadFile, Form, Depends, HTTPException
+from fastapi import APIRouter, UploadFile, Form, Depends, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
 from app.service.frame_processor_service import process_video
 from app.service.s3_service import list_user_frame_archives, delete_s3_file
@@ -10,12 +10,13 @@ router = APIRouter()
 
 @router.post("/process-video")
 async def process_video_route(
+    background_tasks: BackgroundTasks,
     process_input: ProcessVideoInput = Depends(ProcessVideoInput.as_form),
     current_user: dict = Depends(get_current_user),
 ):
     try:
         username = current_user.get("sub", "anonymous")
-        s3_url = process_video(process_input.file, process_input.interval, username)
+        s3_url = process_video(process_input.file, process_input.interval, username, background_tasks)
         return JSONResponse(
             content={"message": "Arquivo processado e salvo com sucesso!", "file_url": s3_url},
             status_code=200,
