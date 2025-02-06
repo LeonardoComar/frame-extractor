@@ -26,10 +26,20 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg
+          sudo apt-get install -y ffmpeg docker-compose
 
       - name: Copy .env.example to .env
         run: cp .env.example .env
+
+      - name: Build and start services using Docker Compose
+        run: docker-compose up -d
+
+      - name: Wait for services to become ready
+        run: |
+          until curl -s http://localhost:4566 > /dev/null; do
+            echo "Waiting for LocalStack..."
+            sleep 5
+          done
 
       - name: Upgrade pip and install dependencies
         run: |
@@ -37,8 +47,13 @@ jobs:
           pip install --no-cache-dir -r requirements.txt
 
       - name: Run tests
-        run: |
-          pytest --cov=app app/tests/
+        env:
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          AWS_DEFAULT_REGION: us-east-1
+          DYNAMODB_ENDPOINT: http://localhost:4566
+        run: pytest --cov=app app/tests/
 
-      - name: Build Docker image
-        run: docker build -t myapp:latest .
+      - name: Stop and clean up Docker Compose services
+        if: always()
+        run: docker-compose down --volumes --remove-orphans
