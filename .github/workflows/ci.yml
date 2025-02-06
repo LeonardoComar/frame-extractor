@@ -1,66 +1,31 @@
-name: CI Pipeline
+name: CI
 
 on:
   push:
-    branches:
-      - main
-      - develop
+    branches: [main, develop]
   pull_request:
-    branches:
-      - main
-      - develop
+    branches: [main, develop]
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg docker-compose
+        uses: actions/checkout@v4
 
       - name: Copy .env.example to .env
         run: cp .env.example .env
 
-      - name: Build and start services using Docker Compose
+      - name: Set up Docker Compose
         run: docker-compose up -d
 
-      - name: Wait for LocalStack to become ready
+      - name: Wait for LocalStack to be ready
         run: |
-          until curl -s http://localhost:4566 > /dev/null; do
-            echo "Waiting for LocalStack..."
+          until curl -s http://localhost:4566/_localstack/health | jq -e '.services | select(.dynamodb == "available" and .s3 == "available" and .ses == "available")' > /dev/null; do
+            echo "Waiting for LocalStack services..."
             sleep 5
           done
 
-      - name: Upgrade pip and install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install --no-cache-dir -r requirements.txt
-
-      - name: Run tests
-        env:
-            SECRET_KEY: u-jc5eZwygw58Howrf2OdFjJLpUwUNQXDhZEvZFrmJw
-            ALGORITHM: HS256
-            ACCESS_TOKEN_EXPIRE_MINUTES: 30
-            DYNAMODB_ENDPOINT: http://localhost:4566
-            AWS_S3_BUCKET_NAME: frames-bucket
-            AWS_S3_ENDPOINT: http://localhost:4566
-            AWS_ACCESS_KEY_ID: test
-            AWS_SECRET_ACCESS_KEY: test
-            AWS_DEFAULT_REGION: us-east-1
-            AWS_S3_PUBLIC_URL: http://localhost:4566
-            AWS_SES_ENDPOINT: http://localhost:4566
-        run: pytest --cov=app app/tests/
-
-      - name: Stop and clean up Docker Compose services
-        if: always()
-        run: docker-compose down --volumes --remove-orphans
+      - name: Execute tests
+        run: docker-compose exec app pytest --cov=app app/tests/
