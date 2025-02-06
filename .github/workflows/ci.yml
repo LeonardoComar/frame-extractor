@@ -14,10 +14,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose jq
+
+      - name: Start Docker Daemon
+        run: sudo systemctl start docker
+
       - name: Copy .env.example to .env
         run: cp .env.example .env
 
-      - name: Set up Docker Compose
+      - name: Build and start containers
         run: docker-compose up -d
 
       - name: Wait for LocalStack to be ready
@@ -28,4 +39,4 @@ jobs:
           done
 
       - name: Execute tests
-        run: docker-compose exec app pytest --cov=app app/tests/
+        run: docker-compose exec app pytest app/tests/
