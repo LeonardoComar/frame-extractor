@@ -34,7 +34,7 @@ jobs:
       - name: Build and start services using Docker Compose
         run: docker-compose up -d
 
-      - name: Wait for services to become ready
+      - name: Wait for LocalStack to become ready
         run: |
           until curl -s http://localhost:4566 > /dev/null; do
             echo "Waiting for LocalStack..."
