@@ -1,64 +1,68 @@
-name: CI Pipeline
+name: CI
 
 on:
   push:
-    branches:
-      - main
-      - develop
+    branches: [ main, develop ]
   pull_request:
-    branches:
-      - main
-      - develop
+    branches: [ main, develop ]
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
 
-    services:
-      localstack:
-        image: localstack/localstack
-        ports:
-          - 4566:4566
-
     steps:
-      - name: Checkout repository
+      - name: Checkout do código
         uses: actions/checkout@v3
 
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
-
-      - name: Install system dependencies
+      - name: Instalar dependências de sistema (ffmpeg)
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
 
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Atualizar pip e instalar dependências Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
       - name: Copy .env.example to .env
         run: cp .env.example .env
 
-      - name: Wait for LocalStack to become ready
-        run: |
-          timeout 30 bash -c 'until echo > /dev/tcp/localhost/4566; do sleep 1; done'
+      - name: Iniciar o LocalStack
+        uses: LocalStack/setup-localstack@v0.2.2
+        with:
+          image-tag: 'latest'
+          install-awslocal: 'true'
 
-      - name: Upgrade pip and install dependencies
+      - name: Aguardar LocalStack ficar disponível
         run: |
-          python -m pip install --upgrade pip
-          pip install --no-cache-dir -r requirements.txt
+          echo "Aguardando LocalStack..."
+          for i in {1..30}; do
+            if curl -s http://localhost:4566/health | grep '"services": {'; then
+              echo "LocalStack disponível!"
+              break
+            fi
+            sleep 2
+          done
 
-      - name: Run tests
+      - name: Executar testes com pytest
         env:
-            SECRET_KEY: u-jc5eZwygw58Howrf2OdFjJLpUwUNQXDhZEvZFrmJw
-            ALGORITHM: HS256
-            ACCESS_TOKEN_EXPIRE_MINUTES: 30
-            DYNAMODB_ENDPOINT: http://localhost:4566
-            AWS_S3_BUCKET_NAME: frames-bucket
-            AWS_S3_ENDPOINT: http://localhost:4566
-            AWS_ACCESS_KEY_ID: test
-            AWS_SECRET_ACCESS_KEY: test
-            AWS_DEFAULT_REGION: us-east-1
-            AWS_S3_PUBLIC_URL: http://localhost:4566
-            AWS_SES_ENDPOINT: http://localhost:4566
-        run: pytest --cov=app app/tests/
-
-
+          # Variáveis de ambiente conforme o seu arquivo .env
+          SECRET_KEY: u-jc5eZwygw58Howrf2OdFjJLpUwUNQXDhZEvZFrmJw
+          ALGORITHM: HS256
+          ACCESS_TOKEN_EXPIRE_MINUTES: 30
+          DYNAMODB_ENDPOINT: http://localhost:4566
+          AWS_S3_BUCKET_NAME: frames-bucket
+          AWS_S3_ENDPOINT: http://localhost:4566
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          AWS_DEFAULT_REGION: us-east-1
+          AWS_S3_PUBLIC_URL: http://localhost:4566
+          AWS_SES_ENDPOINT: http://localhost:4566
+          FRONTEND_URL: http://localhost:3000
+        run: |
+          pytest --cov=app app/tests/
