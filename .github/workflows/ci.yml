@@ -48,10 +48,17 @@ jobs:
 
       - name: Run tests
         env:
-          AWS_ACCESS_KEY_ID: test
-          AWS_SECRET_ACCESS_KEY: test
-          AWS_DEFAULT_REGION: us-east-1
-          DYNAMODB_ENDPOINT: http://localhost:4566
+            SECRET_KEY: u-jc5eZwygw58Howrf2OdFjJLpUwUNQXDhZEvZFrmJw
+            ALGORITHM: HS256
+            ACCESS_TOKEN_EXPIRE_MINUTES: 30
+            DYNAMODB_ENDPOINT: http://localstack:4566
+            AWS_S3_BUCKET_NAME: frames-bucket
+            AWS_S3_ENDPOINT: http://localstack:4566
+            AWS_ACCESS_KEY_ID: test
+            AWS_SECRET_ACCESS_KEY: test
+            AWS_DEFAULT_REGION: us-east-1
+            AWS_S3_PUBLIC_URL: http://localstack:4566
+            AWS_SES_ENDPOINT: http://localstack:4566
         run: pytest --cov=app app/tests/
 
       - name: Stop and clean up Docker Compose services
