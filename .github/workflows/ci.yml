@@ -30,7 +30,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest --maxfail=1 --disable-warnings -q
+          pytest --cov=app app/tests/
 
       - name: Build Docker image
         run: docker build -t myapp:latest .
