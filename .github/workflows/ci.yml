@@ -14,32 +14,32 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    services:
+      localstack:
+        image: localstack/localstack
+        ports:
+          - 4566:4566
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Python 3.12
+      - name: Set up Python 3.12.8
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          python-version: '3.12.8'
 
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg docker-compose
+          sudo apt-get install -y ffmpeg
 
       - name: Copy .env.example to .env
         run: cp .env.example .env
 
-      - name: Build and start services using Docker Compose
-        run: docker-compose up -d
-
       - name: Wait for LocalStack to become ready
         run: |
-          until curl -s http://localhost:4566 > /dev/null; do
-            echo "Waiting for LocalStack..."
-            sleep 5
-          done
+          timeout 30 bash -c 'until echo > /dev/tcp/localhost/4566; do sleep 1; done'
 
       - name: Upgrade pip and install dependencies
         run: |
@@ -61,6 +61,4 @@ jobs:
             AWS_SES_ENDPOINT: http://localhost:4566
         run: pytest --cov=app app/tests/
 
-      - name: Stop and clean up Docker Compose services
-        if: always()
-        run: docker-compose down --volumes --remove-orphans
+
