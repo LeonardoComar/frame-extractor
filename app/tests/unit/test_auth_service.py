@@ -86,7 +86,7 @@ def test_reset_password_invalid_token():
 def test_send_password_reset_email_success():
     dummy_user = {"username": "foo", "email": "foo@example.com"}
     with patch("app.service.auth_service.get_user_by_email", return_value=dummy_user) as mock_get_email, \
-         patch("app.service.auth_service.create_access_token", side_effect=create_access_token) as mock_create_token:
+         patch("app.service.auth_service.create_access_token", side_effect=create_access_token):
         dummy_background = MagicMock()
         auth_service.send_password_reset_email("foo@example.com", dummy_background)
         mock_get_email.assert_called_once_with("foo@example.com")

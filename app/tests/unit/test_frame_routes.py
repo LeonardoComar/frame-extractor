@@ -29,7 +29,6 @@ def test_process_video_success():
     
     # Cria um objeto similar ao UploadFile
     from io import BytesIO
-    dummy_file = DummyUploadFile("video.mp4", BytesIO(b"fake video content"))
     
     # Cria um objeto que simula o ProcessVideoInput (note que na rota essa classe é utilizada via Depends)
     # Vamos simular a chamada ao process_video, que é a função que efetivamente faz o processamento.

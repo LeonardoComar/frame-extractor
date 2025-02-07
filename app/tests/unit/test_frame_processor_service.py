@@ -16,9 +16,6 @@ class DummyUploadFile:
 def dummy_upload_to_s3(file_path, s3_key):
     return f"http://fake-s3.com/{s3_key}"
 
-def dummy_send_email(email, username, file_url):
-    pass
-
 def dummy_get_user_by_username(username):
     return {"username": username, "email": f"{username}@example.com"}
 
@@ -34,7 +31,7 @@ def test_process_video_success():
     with patch("app.service.frame_processor_service.upload_to_s3", side_effect=dummy_upload_to_s3) as mock_upload, \
          patch("app.service.frame_processor_service.get_user_by_username", side_effect=dummy_get_user_by_username) as mock_get_user, \
          patch("app.service.frame_processor_service.ffmpeg.input") as mock_ffmpeg_input, \
-         patch("zipfile.ZipFile.write", return_value=None) as mock_zip_write:
+         patch("zipfile.ZipFile.write", return_value=None):
         
         # Simula o pipeline do ffmpeg
         fake_run = MagicMock(return_value=(b"stdout", b"stderr"))
@@ -52,7 +49,7 @@ def test_process_video_success():
             # Verifica que o background task foi enfileirada
             dummy_background.add_task.assert_called_once()
             # Opcional: verifique os argumentos passados a add_task
-            args, kwargs = dummy_background.add_task.call_args
+            args, _ = dummy_background.add_task.call_args
             # args[0] deve ser a função send_file_url_email_ses; se desejar verificar:
             from app.service.email_ses_service import send_file_url_email_ses
             assert args[0] == send_file_url_email_ses

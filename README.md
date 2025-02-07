@@ -39,8 +39,6 @@
 
 
 ### o que falta
-* github CI/CD
 * Documentação
 * K8s para duplicação de VM
 * Documentação API
-* Sonarqube

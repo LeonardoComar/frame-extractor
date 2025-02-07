@@ -1,5 +1,6 @@
 # app/service/email_ses_service.py
 from botocore.exceptions import ClientError
+from app.exceptions.email_send_error import EmailSendError
 from app.repository.email_ses_repository import get_email_ses_client
 
 def send_reset_password_email_ses(email_to: str, username: str, reset_link: str):
@@ -28,7 +29,7 @@ def send_reset_password_email_ses(email_to: str, username: str, reset_link: str)
         )
         return response
     except ClientError as e:
-        raise Exception(f"Erro ao enviar e-mail via SES: {e.response['Error']['Message']}")
+        raise EmailSendError(f"Erro ao enviar e-mail via SES: {e.response['Error']['Message']}")
     
 
 def send_file_url_email_ses(email_to: str, username: str, file_url: str):    
@@ -57,4 +58,4 @@ def send_file_url_email_ses(email_to: str, username: str, file_url: str):
         )
         return response
     except ClientError as e:
-        raise Exception(f"Erro ao enviar e-mail via SES: {e.response['Error']['Message']}")
+        raise EmailSendError(f"Erro ao enviar e-mail via SES: {e.response['Error']['Message']}")
