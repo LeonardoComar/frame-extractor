@@ -68,6 +68,6 @@ jobs:
           pytest app/tests --cov=app --cov-report=xml
 
       - name: Executar SonarScanner
-        uses: SonarSource/sonarcloud-github-action@v1
+        uses: SonarSource/sonarqube-scan-action@v4.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
