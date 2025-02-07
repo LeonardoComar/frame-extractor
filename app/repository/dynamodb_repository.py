@@ -110,6 +110,6 @@ def get_all_users():
     response = table.scan()
     return response.get("Items", [])
 
-def update_user(username: str, updated_user: dict):
+def update_user(updated_user: dict):
     table = get_user_table()
     table.put_item(Item=updated_user)
