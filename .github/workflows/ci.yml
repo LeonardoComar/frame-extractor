@@ -65,4 +65,9 @@ jobs:
           AWS_SES_ENDPOINT: http://localhost:4566
           FRONTEND_URL: http://localhost:3000
         run: |
-          pytest --cov=app app/tests/
+          pytest app/tests --cov=app --cov-report=xml
+
+      - name: Executar SonarScanner
+        uses: SonarSource/sonarqube-scan-action@v4.1.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
