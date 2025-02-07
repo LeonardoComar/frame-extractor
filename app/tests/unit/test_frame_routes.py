@@ -18,18 +18,7 @@ app.dependency_overrides[get_current_user] = fake_current_user
 client = TestClient(app)
 
 # --- Testes para a rota POST /process-video ---
-def test_process_video_success():
-    # Simula um arquivo enviado via form
-    class DummyUploadFile:
-        def __init__(self, filename, content):
-            self.filename = filename
-            self.file = content  # O conteúdo pode ser um objeto com método read()
-        def read(self):
-            return self.file.read()
-    
-    # Cria um objeto similar ao UploadFile
-    from io import BytesIO
-    
+def test_process_video_success(): 
     # Cria um objeto que simula o ProcessVideoInput (note que na rota essa classe é utilizada via Depends)
     # Vamos simular a chamada ao process_video, que é a função que efetivamente faz o processamento.
     with patch("app.api.frame_routes.process_video", return_value="http://fake-s3-url.com/file.zip") as mock_process:
