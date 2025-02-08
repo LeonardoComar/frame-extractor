@@ -44,7 +44,7 @@ class AuthService:
         if not user:
             raise ValueError(f"Usuário {username} não encontrado")
         user["status"] = status
-        update_user(username, user)
+        update_user(user)
         
     def reset_password(self, token: str, new_password: str):
         payload = verify_access_token(token)
