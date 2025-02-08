@@ -54,7 +54,7 @@ def test_update_user_status_success():
         auth_service.update_user_status("foo", "active")
         assert dummy_user["status"] == "active"
         mock_get.assert_called_once_with("foo")
-        mock_update.assert_called_once_with("foo", dummy_user)
+        mock_update.assert_called_once_with(dummy_user)
 
 def test_update_user_status_invalid_status():
     with pytest.raises(ValueError) as exc_info:
