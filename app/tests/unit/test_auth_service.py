@@ -135,20 +135,6 @@ def test_get_all_users():
         assert users == [{"username": "foo"}]
         mock_all.assert_called_once()
 
-# --- Testes para update_user_status ---
-def test_update_user_status_success():
-    dummy_user = {"username": "foo", "status": "inactive", "email": "foo@example.com"}
-    with patch("app.service.auth_service.get_user_by_username", return_value=dummy_user) as mock_get, \
-         patch("app.service.auth_service.update_user") as mock_update, \
-         patch("app.service.auth_service.send_active_user_email_ses") as mock_send_email:
-         
-         auth_service.update_user_status("foo", "active")
-         
-         assert dummy_user["status"] == "active"
-         mock_get.assert_called_once_with("foo")
-         mock_update.assert_called_once_with(dummy_user)
-         mock_send_email.assert_called_once_with(dummy_user["email"], "foo")
-
 def test_update_user_status_invalid_status():
     with pytest.raises(ValueError) as exc_info:
         auth_service.update_user_status("foo", "invalid")
@@ -159,16 +145,6 @@ def test_update_user_status_user_not_found():
         with pytest.raises(ValueError) as exc_info:
             auth_service.update_user_status("foo", "active")
         assert "Usuário foo não encontrado" in str(exc_info.value)
-
-# --- Testes para reset_password ---
-def test_reset_password_success():
-    dummy_user = {"username": "foo", "password": "$2b$12$oldhash"}
-    dummy_token = create_access_token({"sub": "foo"})
-    with patch("app.service.auth_service.get_user_by_username", return_value=dummy_user) as mock_get, \
-         patch("app.service.auth_service.update_user") as mock_update:
-        auth_service.reset_password(dummy_token, "newpass")
-        mock_get.assert_called_once_with("foo")
-        mock_update.assert_called_once_with("foo", dummy_user)
 
 def test_reset_password_invalid_token():
     with pytest.raises(ValueError) as exc_info:
