@@ -5,6 +5,7 @@ from unittest.mock import patch
 from app.api.user_routes import router as user_router
 from app.core.auth import get_admin_user, get_current_user
 from unittest.mock import ANY
+from app.domain.user_model import UserCreate
 
 # Cria uma instância do FastAPI para teste e inclui o router real com prefixo "/api"
 app = FastAPI()
@@ -30,18 +31,27 @@ def test_register_success():
         # Simula que a criação do usuário ocorreu sem erros.
         response = client.post(
             "/api/register",
-            json={"username": "foo", "password": "bar", "email": "foo@example.com"}
+            json={"username": "foo", "password": "bar123456", "email": "foo@example.com"}
         )
+        
+        # Verifica a resposta da API
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {"message": "Usuário registrado com sucesso"}
-        mock_create.assert_called_once_with("foo", "bar", "foo@example.com")
+        
+        # Verifica se o método create_user foi chamado com o objeto UserCreate correto
+        expected_user_data = UserCreate(
+            username="foo",
+            password="bar123456",
+            email="foo@example.com"
+        )
+        mock_create.assert_called_once_with(expected_user_data)
 
 def test_register_value_error():
     with patch("app.api.user_routes.auth_service.create_user") as mock_create:
         mock_create.side_effect = ValueError("Usuário já está em uso")
         response = client.post(
             "/api/register",
-            json={"username": "foo", "password": "bar", "email": "foo@example.com"}
+            json={"username": "foo", "password": "bar123456", "email": "foo@example.com"}
         )
         assert response.status_code == 400
         assert "Usuário já está em uso" in response.json()["detail"]

@@ -54,7 +54,7 @@ jobs:
           # Variáveis de ambiente conforme o seu arquivo .env
           SECRET_KEY: u-jc5eZwygw58Howrf2OdFjJLpUwUNQXDhZEvZFrmJw
           ALGORITHM: HS256
-          ACCESS_TOKEN_EXPIRE_MINUTES: 30
+          ACCESS_TOKEN_EXPIRE_MINUTES: 60
           DYNAMODB_ENDPOINT: http://localhost:4566
           AWS_S3_BUCKET_NAME: frames-bucket
           AWS_S3_ENDPOINT: http://localhost:4566

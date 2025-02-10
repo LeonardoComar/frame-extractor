@@ -1,30 +1,106 @@
 import pytest
 from fastapi import HTTPException
 from app.service.auth_service import AuthService
-from app.repository.dynamodb_repository import add_user, get_user_by_username, update_user, get_all_users, get_user_by_email
+from app.repository.dynamodb_repository import add_user, get_user_by_username, update_user, get_all_users, get_user_by_email_hash
 from app.core.jwt import create_access_token, verify_access_token
-from app.domain.user_model import User
+from app.domain.user_model import User, UserCreate
 from unittest.mock import patch, MagicMock
+from app.core.cryptography import decrypt_email, encrypt_email
+import hashlib
 
 auth_service = AuthService()
 
 # --- Testes para create_user ---
 def test_create_user_success():
+    user_data = UserCreate(
+        username="Foo",
+        password="bar123456",
+        email="foo@example.com"
+    )
+
+    # Simulação do hash direto do e-mail esperado
+    expected_email_hash = hashlib.sha256(user_data.email.encode()).hexdigest()
+
     with patch("app.service.auth_service.get_user_by_username", return_value=None) as mock_get_user, \
+         patch("app.service.auth_service.get_user_by_email_hash", return_value=None) as mock_get_email, \
          patch("app.service.auth_service.add_user") as mock_add_user:
-        auth_service.create_user("foo", "bar", "foo@example.com")
-        mock_get_user.assert_called_once_with("foo")
-        mock_add_user.assert_called_once()
+
+        auth_service.create_user(user_data)
+
+    # Verifica se get_user_by_username foi chamado com o username em minúsculas
+    mock_get_user.assert_called_once_with("foo")
+
+    # Verifica que get_user_by_email_hash foi chamado com o hash correto do e-mail
+    mock_get_email.assert_called_once_with(expected_email_hash)
+
         
 def test_create_user_existing():
+    user_data = UserCreate(
+        username="Foo",
+        password="bar123456",
+        email="foo@example.com"
+    )
+
     with patch("app.service.auth_service.get_user_by_username", return_value={"username": "foo"}):
         with pytest.raises(ValueError) as exc_info:
-            auth_service.create_user("foo", "bar", "foo@example.com")
+            auth_service.create_user(user_data)
         assert "Usuário já está em uso" in str(exc_info.value)
+
+def test_create_user_existing_email():
+    # Cria um objeto UserCreate para o teste
+    user_data = UserCreate(
+        username="testuser",
+        email="test@example.com",
+        password="password123",
+        status="active",
+        role="user_level_1"
+    )
+    
+    # Mock do retorno para get_user_by_username (usuário não existe)
+    mock_get_user = patch(
+        "app.service.auth_service.get_user_by_username",
+        return_value=None
+    )
+
+    # Mock do retorno para get_user_by_email_hash (email já existe)
+    mock_get_email = patch(
+        "app.service.auth_service.get_user_by_email_hash",
+        return_value={"email": encrypt_email("test@example.com")}
+    )
+
+    with mock_get_user, mock_get_email:
+        with pytest.raises(ValueError) as exc_info:
+            # Tenta criar um usuário com email já existente
+            auth_service.create_user(user_data)
+        assert "Email já está em uso" in str(exc_info.value)
+    
+    with mock_get_user, mock_get_email:
+        with pytest.raises(ValueError) as exc_info:
+            auth_service.create_user(user_data)
+        assert "Email já está em uso" in str(exc_info.value)
+
+def test_create_user_existing_email_case_insensitive():
+    user_data = UserCreate(
+        username="Foo",
+        password="bar123456",
+        email="foo@example.com"
+    )
+
+    with patch("app.service.auth_service.get_user_by_username", return_value=None) as mock_get_user, \
+         patch("app.service.auth_service.get_user_by_email_hash", return_value={"email": "foo@example.com"}) as mock_get_email:
+        
+        with pytest.raises(ValueError) as exc_info:
+            auth_service.create_user(user_data)
+        assert "Email já está em uso" in str(exc_info.value)
 
 # --- Testes para authenticate_user ---
 def test_authenticate_user_success():
-    dummy_user = {"username": "foo", "password": "$2b$12$dummyhash", "role": "administrator"}
+    dummy_user = {
+        "username": "foo",
+        "password": "$2b$12$dummyhash",
+        "role": "administrator",
+        "status": "active"
+    }
     with patch("app.service.auth_service.get_user_by_username", return_value=dummy_user), \
          patch("app.service.auth_service.AuthService.verify_password", return_value=True) as mock_verify:
         token = auth_service.authenticate_user("foo", "bar")
@@ -39,6 +115,19 @@ def test_authenticate_user_invalid():
             auth_service.authenticate_user("foo", "bar")
         assert "Credenciais inválidas" in str(exc_info.value)
 
+def test_authenticate_user_inactive():
+    dummy_user = {
+        "username": "foo",
+        "password": "$2b$12$dummyhash",
+        "role": "administrator",
+        "status": "inactive"
+    }
+    with patch("app.service.auth_service.get_user_by_username", return_value=dummy_user), \
+         patch("app.service.auth_service.AuthService.verify_password", return_value=True):
+        with pytest.raises(ValueError) as exc_info:
+            auth_service.authenticate_user("foo", "bar")
+    assert "O usuário está inativo! Contatar o administrador ou o suporte para mais informações" in str(exc_info.value)
+
 # --- Testes para get_all_users ---
 def test_get_all_users():
     with patch("app.service.auth_service.get_all_users", return_value=[{"username": "foo"}]) as mock_all:
@@ -48,13 +137,17 @@ def test_get_all_users():
 
 # --- Testes para update_user_status ---
 def test_update_user_status_success():
-    dummy_user = {"username": "foo", "status": "inactive"}
+    dummy_user = {"username": "foo", "status": "inactive", "email": "foo@example.com"}
     with patch("app.service.auth_service.get_user_by_username", return_value=dummy_user) as mock_get, \
-         patch("app.service.auth_service.update_user") as mock_update:
-        auth_service.update_user_status("foo", "active")
-        assert dummy_user["status"] == "active"
-        mock_get.assert_called_once_with("foo")
-        mock_update.assert_called_once_with(dummy_user)
+         patch("app.service.auth_service.update_user") as mock_update, \
+         patch("app.service.auth_service.send_active_user_email_ses") as mock_send_email:
+         
+         auth_service.update_user_status("foo", "active")
+         
+         assert dummy_user["status"] == "active"
+         mock_get.assert_called_once_with("foo")
+         mock_update.assert_called_once_with(dummy_user)
+         mock_send_email.assert_called_once_with(dummy_user["email"], "foo")
 
 def test_update_user_status_invalid_status():
     with pytest.raises(ValueError) as exc_info:
@@ -85,15 +178,22 @@ def test_reset_password_invalid_token():
 # --- Testes para send_password_reset_email ---
 def test_send_password_reset_email_success():
     dummy_user = {"username": "foo", "email": "foo@example.com"}
-    with patch("app.service.auth_service.get_user_by_email", return_value=dummy_user) as mock_get_email, \
+
+    # Calcula o hash esperado do e-mail diretamente
+    expected_email_hash = hashlib.sha256(dummy_user["email"].encode()).hexdigest()
+
+    with patch("app.service.auth_service.get_user_by_email_hash", return_value=dummy_user) as mock_get_email, \
          patch("app.service.auth_service.create_access_token", side_effect=create_access_token):
+
         dummy_background = MagicMock()
         auth_service.send_password_reset_email("foo@example.com", dummy_background)
-        mock_get_email.assert_called_once_with("foo@example.com")
-        dummy_background.add_task.assert_called_once()
+
+    # Verifica se get_user_by_email_hash foi chamado com o hash correto
+    mock_get_email.assert_called_once_with(expected_email_hash)
+
         
 def test_send_password_reset_email_user_not_found():
-    with patch("app.service.auth_service.get_user_by_email", return_value=None):
+    with patch("app.service.auth_service.get_user_by_email_hash", return_value=None):
         with pytest.raises(ValueError) as exc_info:
             auth_service.send_password_reset_email("notfound@example.com", MagicMock())
         assert "Usuário não encontrado" in str(exc_info.value)

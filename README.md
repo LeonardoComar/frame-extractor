@@ -12,6 +12,10 @@
 * python -c "import secrets; print(secrets.token_urlsafe(32))"
 
 
+### Comando pra gerar key criptografada do E-mail
+* python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+
+
 ### Comando para verificar se a tabela users foi criada no localstack
 
 * aws --endpoint-url=http://localhost:4566 dynamodb list-tables
@@ -40,5 +44,17 @@
 
 ### o que falta
 * Documentação
+  Desenho da arquitetura
+
 * K8s para duplicação de VM
+
+
 * Documentação API
+
+Melhoria de código se der tempo:
+rota para verificar o processamento do vídeo
+
+ajustar o arquivo env.example
+Atualizar readme para execução do projeto
+
+auth_service virar user_service

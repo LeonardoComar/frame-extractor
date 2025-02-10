@@ -4,7 +4,7 @@ class Settings(BaseSettings):
     # Configurações de Autenticação
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
     # Configurações AWS
     DYNAMODB_ENDPOINT: str
@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     AWS_S3_PUBLIC_URL: str
     AWS_SES_ENDPOINT: str
     FRONTEND_URL: str
+    FERNET_KEY: str
 
     class Config:
         env_file = ".env"

@@ -68,6 +68,7 @@ def add_user(user: User):
         Item={
             'username': user_data['username'],
             'email': user_data['email'],
+            'email_hash': user_data['email_hash'],
             'password': user_data['hashed_password'],
             'status': user_data['status'],
             'role': user_data['role'],
@@ -90,11 +91,11 @@ def get_user_by_username(username: str):
         print(f"Erro ao buscar o usuário: {e}")
         return None
     
-def get_user_by_email(email: str):
+def get_user_by_email_hash(email_hash: str):
     table = get_user_table()
     try:
         response = table.scan(
-            FilterExpression=Attr('email').eq(email)
+            FilterExpression=Attr('email_hash').eq(email_hash)
         )
         items = response.get("Items", [])
         if items:
@@ -107,7 +108,10 @@ def get_user_by_email(email: str):
     
 def get_all_users():
     table = get_user_table()
-    response = table.scan()
+    response = table.scan(
+        ProjectionExpression="username, #st, #rl",
+        ExpressionAttributeNames={"#st": "status", "#rl": "role"}
+    )
     return response.get("Items", [])
 
 def update_user(updated_user: dict):
