@@ -18,7 +18,7 @@ def get_email_hash(email: str) -> str:
     import hashlib
     return hashlib.sha256(email.encode()).hexdigest()
 
-def decrypt_email_hash(email_hash: str, encrypted_email: str) -> str:
+def decrypt_email_hash(email_hash: str, encrypted_email: str) -> str: # NOSONAR
     """
     Apesar do nome, um hash SHA256 não é reversível.
     Para atender à necessidade de obter o e-mail em texto claro,

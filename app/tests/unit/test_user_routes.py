@@ -41,7 +41,7 @@ def test_register_success():
         # Verifica se o método create_user foi chamado com o objeto UserCreate correto
         expected_user_data = UserCreate(
             username="foo",
-            password="bar123456",
+            password="bar123456", # NOSONAR
             email="foo@example.com"
         )
         mock_create.assert_called_once_with(expected_user_data)

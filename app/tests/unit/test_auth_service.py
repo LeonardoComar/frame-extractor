@@ -14,7 +14,7 @@ auth_service = AuthService()
 def test_create_user_success():
     user_data = UserCreate(
         username="Foo",
-        password="bar123456",
+        password="bar123456", # NOSONAR
         email="foo@example.com"
     )
 
@@ -37,7 +37,7 @@ def test_create_user_success():
 def test_create_user_existing():
     user_data = UserCreate(
         username="Foo",
-        password="bar123456",
+        password="bar123456", # NOSONAR
         email="foo@example.com"
     )
 
@@ -82,7 +82,7 @@ def test_create_user_existing_email():
 def test_create_user_existing_email_case_insensitive():
     user_data = UserCreate(
         username="Foo",
-        password="bar123456",
+        password="bar123456", # NOSONAR
         email="foo@example.com"
     )
 
