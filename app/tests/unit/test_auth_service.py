@@ -23,7 +23,7 @@ def test_create_user_success():
 
     with patch("app.service.auth_service.get_user_by_username", return_value=None) as mock_get_user, \
          patch("app.service.auth_service.get_user_by_email_hash", return_value=None) as mock_get_email, \
-         patch("app.service.auth_service.add_user") as mock_add_user:
+         patch("app.service.auth_service.add_user"):
 
         auth_service.create_user(user_data)
 
@@ -86,8 +86,8 @@ def test_create_user_existing_email_case_insensitive():
         email="foo@example.com"
     )
 
-    with patch("app.service.auth_service.get_user_by_username", return_value=None) as mock_get_user, \
-         patch("app.service.auth_service.get_user_by_email_hash", return_value={"email": "foo@example.com"}) as mock_get_email:
+    with patch("app.service.auth_service.get_user_by_username", return_value=None), \
+         patch("app.service.auth_service.get_user_by_email_hash", return_value={"email": "foo@example.com"}):
         
         with pytest.raises(ValueError) as exc_info:
             auth_service.create_user(user_data)
@@ -97,7 +97,7 @@ def test_create_user_existing_email_case_insensitive():
 def test_authenticate_user_success():
     dummy_user = {
         "username": "foo",
-        "password": "$2b$12$dummyhash",
+        "password": "$2b$12$dummyhash", # NOSONAR
         "role": "administrator",
         "status": "active"
     }
@@ -118,7 +118,7 @@ def test_authenticate_user_invalid():
 def test_authenticate_user_inactive():
     dummy_user = {
         "username": "foo",
-        "password": "$2b$12$dummyhash",
+        "password": "$2b$12$dummyhash", # NOSONAR
         "role": "administrator",
         "status": "inactive"
     }

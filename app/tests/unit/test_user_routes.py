@@ -31,7 +31,7 @@ def test_register_success():
         # Simula que a criação do usuário ocorreu sem erros.
         response = client.post(
             "/api/register",
-            json={"username": "foo", "password": "bar123456", "email": "foo@example.com"}
+            json={"username": "foo", "password": "bar123456", "email": "foo@example.com"} # NOSONAR
         )
         
         # Verifica a resposta da API
@@ -51,7 +51,7 @@ def test_register_value_error():
         mock_create.side_effect = ValueError("Usuário já está em uso")
         response = client.post(
             "/api/register",
-            json={"username": "foo", "password": "bar123456", "email": "foo@example.com"}
+            json={"username": "foo", "password": "bar123456", "email": "foo@example.com"} # NOSONAR
         )
         assert response.status_code == 400
         assert "Usuário já está em uso" in response.json()["detail"]
@@ -65,7 +65,7 @@ def test_login_success():
         mock_auth.return_value = "dummy_token"
         response = client.post(
             "/api/login",
-            json={"username": "foo", "password": "bar"}
+            json={"username": "foo", "password": "bar"} # NOSONAR
         )
         assert response.status_code == status.HTTP_200_OK
         json_data = response.json()
@@ -78,7 +78,7 @@ def test_login_value_error():
         mock_auth.side_effect = ValueError("Credenciais inválidas")
         response = client.post(
             "/api/login",
-            json={"username": "foo", "password": "wrong"}
+            json={"username": "foo", "password": "wrong"} # NOSONAR
         )
         assert response.status_code == 401
         assert "Credenciais inválidas" in response.json()["detail"]
