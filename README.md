@@ -41,13 +41,19 @@
 
 * pytest app/tests -v --cov=app --cov-report=html
 
+###
+* minikube service app-service -n frame-extractor
+* kubectl delete -f deploy/app-service.yaml
+* kubectl apply -f deploy/app-service.yaml
+* docker build -t leocomar/myapp:latest .
+* docker push leocomar/myapp:latest
+* kubectl rollout restart deployment app-deployment -n frame-extractor
+* kubectl get pods -n frame-extractor -w
+* k6 run test-load.js 
 
 ### o que falta
 * Documentação
   Desenho da arquitetura
-
-* K8s para duplicação de VM
-
 
 * Documentação API
 

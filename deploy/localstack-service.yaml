@@ -1,0 +1,14 @@
+# localstack-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: localstack-service
+  namespace: frame-extractor
+spec:
+  selector:
+    app: localstack
+  ports:
+  - protocol: TCP
+    port: 4566
+    targetPort: 4566
+  type: ClusterIP

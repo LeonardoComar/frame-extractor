@@ -1,0 +1,14 @@
+# app-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+  namespace: frame-extractor
+spec:
+  selector:
+    app: app
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+  type: NodePort  # ou LoadBalancer, se preferir

@@ -1,0 +1,15 @@
+# load-test.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: load-test
+  namespace: frame-extractor
+spec:
+  template:
+    spec:
+      containers:
+      - name: load-generator
+        image: rakyll/hey
+        command: ["hey", "-z", "60s", "-q", "50", "http://app-service:8080/"]
+      restartPolicy: Never
+  backoffLimit: 2
