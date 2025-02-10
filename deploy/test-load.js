@@ -1,7 +1,7 @@
 import http from 'k6/http';
 import { sleep } from 'k6';
 
-export let options = {
+export const options = {
   stages: [
     { duration: '30s', target: 100 }, // Sobe rápido para 100 VUs
     { duration: '2m', target: 200 },  // Mantém 200 VUs por 2 minutos
