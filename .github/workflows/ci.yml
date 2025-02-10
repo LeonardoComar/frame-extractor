@@ -64,6 +64,7 @@ jobs:
           AWS_S3_PUBLIC_URL: http://localhost:4566
           AWS_SES_ENDPOINT: http://localhost:4566
           FRONTEND_URL: http://localhost:3000
+          FERNET_KEY: wuTxc1Jont1Hr315LGmcCSLPEg_OG7ETvM1EtP6I6p8=
         run: |
           pytest app/tests --cov=app --cov-report=xml
 
