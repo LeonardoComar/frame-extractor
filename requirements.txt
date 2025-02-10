@@ -18,3 +18,4 @@ pytest-asyncio==0.25.3
 pytest-mock==3.14.0
 httpx==0.28.1
 moto[s3]==5.0.6
+cryptography==44.0.0

@@ -1,4 +1,3 @@
-# app/domain/process_video_model.py
 from pydantic import BaseModel, ValidationError
 from fastapi import UploadFile, File, Form
 from typing import Annotated
@@ -26,11 +25,23 @@ class ProcessVideoInput(BaseModel):
         return file
 
     @classmethod
+    def validate_file_size(cls, file: UploadFile):
+        max_size = 1 * 1024 * 1024 * 1024  # 1GB em bytes
+        file_size = file.size
+        if file_size > max_size:
+            raise HTTPException(
+                status_code=422,
+                detail="O tamanho do arquivo excede o limite permitido de 1GB."
+            )
+        return file
+
+    @classmethod
     def as_form(cls, file: UploadFile = File(...), interval: int = Form(...)):
         try:
             # Validação manual para integração com formulário
             cls.validate_file_extension(file)
             cls.validate_interval_value(interval)
+            cls.validate_file_size(file)
 
             return cls(file=file, interval=interval)
         except ValidationError as e:

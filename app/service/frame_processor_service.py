@@ -8,6 +8,8 @@ from fastapi import HTTPException
 from app.service.s3_service import upload_to_s3
 from app.service.email_ses_service import send_file_url_email_ses
 from app.repository.dynamodb_repository import get_user_by_username
+from app.core.cryptography import decrypt_email_hash
+
 
 def process_video(file, interval, username, background_tasks):
     try:
@@ -50,7 +52,9 @@ def process_video(file, interval, username, background_tasks):
 
             user = get_user_by_username(username)
 
-            background_tasks.add_task(send_file_url_email_ses, user["email"], user["username"], file_url)
+            real_email = decrypt_email_hash(user["email_hash"], user["email"])
+
+            background_tasks.add_task(send_file_url_email_ses, real_email, user["username"], file_url)
 
             # Retornar o URL do arquivo salvo
             return file_url

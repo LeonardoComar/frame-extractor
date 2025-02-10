@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"testuser5\", \r\n    \"password\": \"Test123!\", \r\n    \"email\": \"test5@example.com\"\r\n}",
+							"raw": "{\r\n    \"username\": \"testuser7\", \r\n    \"password\": \"Test123!\", \r\n    \"email\": \"test7@example.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -143,6 +143,10 @@
 								"type": "text"
 							}
 						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
 						"url": {
 							"raw": "{{baseUrl}}:{{port}}/api/users/{{username}}/activate",
 							"host": [
@@ -154,6 +158,82 @@
 								"users",
 								"{{username}}",
 								"activate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recuperar senha",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test7@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{port}}/api/forgot-password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "E-mails enviados (SES)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4566/_aws/ses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4566",
+							"path": [
+								"_aws",
+								"ses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Redefinir senha",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0dXNlcjciLCJleHAiOjE3Mzg2Mjk3OTd9.YZnldyOEntBpO7VHpxEElF6WDw0GDI6wQdQfLsgCsT0\",\r\n    \"new_password\":\"novaSenha123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}:{{port}}/api/reset-password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"reset-password"
 							]
 						}
 					},
@@ -229,6 +309,32 @@
 					"response": []
 				},
 				{
+					"name": "Acompanhar Gerar Frames",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}:{{port}}/api/process-video/progress",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"process-video",
+								"progress"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Listar Frames do Usuário",
 					"request": {
 						"method": "GET",
@@ -282,25 +388,6 @@
 					"response": []
 				}
 			]
-		},
-		{
-			"name": "Teste",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}:{{port}}/api/test",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"port": "{{port}}",
-					"path": [
-						"api",
-						"test"
-					]
-				}
-			},
-			"response": []
 		}
 	]
 }

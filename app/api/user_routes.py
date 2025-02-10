@@ -10,7 +10,7 @@ auth_service = AuthService()
 @router.post("/register")
 async def register_user(user: UserCreate):
     try:
-        auth_service.create_user(user.username, user.password, user.email)
+        auth_service.create_user(user)
         return {"message": "Usuário registrado com sucesso"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

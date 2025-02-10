@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field, field_validator, EmailStr
 class UserCreate(BaseModel):
     username: str
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=8)
     status: str = Field(default='active')
     role: str = Field(default='user_level_1')
 
@@ -17,7 +17,8 @@ class UserCreate(BaseModel):
 
 class User(BaseModel):
     username: str
-    email: EmailStr
+    email: str
+    email_hash: str
     hashed_password: str
     status: str = Field(default='active')
     role: str = Field(default='user_level_1')
