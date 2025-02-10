@@ -41,7 +41,7 @@ def test_user_create_short_password():
         UserCreate(
             username="testuser",
             email="test@example.com",
-            password="short"  # Senha com menos de 8 caracteres
+            password="short"  # NOSONAR
         )
 
 def test_user_create_invalid_status():
@@ -50,7 +50,7 @@ def test_user_create_invalid_status():
         UserCreate(
             username="testuser",
             email="test@example.com",
-            password="password123",
+            password="password123", # NOSONAR
             status="invalid_status"  # Status inválido
         )
 
@@ -147,5 +147,5 @@ def test_password_reset_short_password():
     with pytest.raises(ValidationError):
         PasswordReset(
             token="reset_token_123",
-            new_password="short"  # Senha com menos de 8 caracteres
+            new_password="short"  # NOSONAR
         )
