@@ -1,27 +1,27 @@
-FROM python:3.9-slim-buster
+FROM python:3.12.8-slim
 
-# Defina as variáveis de ambiente para Python
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Variáveis de ambiente para Python
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# Defina o diretório de trabalho
+# Diretório de trabalho
 WORKDIR /app
 
-# Instale dependências do sistema operacional, incluindo ffmpeg
+# Instalar dependências do sistema
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* 
 
-# Instale as dependências do Python
-COPY requirements.txt /app/
+# Copiar e instalar dependências do Python
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copie os arquivos do projeto
-COPY . /app/
+# Copiar o código da aplicação
+COPY . .
 
-# Exponha a porta 8080
+# Expor a porta
 EXPOSE 8080
 
-# Comando para iniciar a aplicação
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+# Comando para iniciar o servidor
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
