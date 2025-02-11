@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from fastapi import HTTPException, status
+from fastapi import status
 from unittest.mock import patch
 from app.main import app
 from app.core.auth import get_current_user

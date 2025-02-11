@@ -15,5 +15,5 @@ export const options = {
 
 export default function () {
   http.get('http://127.0.0.1:64240/api/health_check'); // Ajuste para a URL correta do serviço
-  sleep(0.5); // Reduz tempo de espera para aumentar carga
+  sleep(0.5); 
 }

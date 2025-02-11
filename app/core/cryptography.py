@@ -1,4 +1,3 @@
-# app/core/cryptography.py
 from cryptography.fernet import Fernet
 from app.core.config import settings
 
@@ -20,8 +19,6 @@ def get_email_hash(email: str) -> str:
 
 def decrypt_email_hash(email_hash: str, encrypted_email: str) -> str: # NOSONAR
     """
-    Apesar do nome, um hash SHA256 não é reversível.
-    Para atender à necessidade de obter o e-mail em texto claro,
-    simplesmente descriptografa o e-mail criptografado.
+    Descriptografa o e-mail criptografado.
     """
     return decrypt_email(encrypted_email)

@@ -1,4 +1,3 @@
-# app/service/email_ses_service.py
 from botocore.exceptions import ClientError
 from app.exceptions.email_send_error import EmailSendError
 from app.repository.email_ses_repository import get_email_ses_client

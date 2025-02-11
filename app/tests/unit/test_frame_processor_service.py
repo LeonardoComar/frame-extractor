@@ -1,5 +1,4 @@
 import os
-import tempfile
 import zipfile
 from io import BytesIO
 import pytest

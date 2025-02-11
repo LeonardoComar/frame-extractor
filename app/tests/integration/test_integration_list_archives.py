@@ -5,7 +5,6 @@ from app.core.auth import get_current_user
 from app.core.config import settings
 from unittest.mock import patch
 
-# Sobrescreve a dependência de autenticação para simular um usuário logado "testuser"
 def fake_current_user():
     return {"sub": "testuser", "email": "testuser@example.com", "role": "user_level_1"}
 
@@ -45,7 +44,7 @@ def test_list_frame_archives_unauthorized():
     response = client.get("/api/testuser/list-frame-archives")
     assert response.status_code == 403, f"Esperado 403, obtido {response.status_code}"
     assert "Acesso negado" in response.json()["detail"]
-    # Restaura a dependência para os demais testes
+
     app.dependency_overrides[get_current_user] = fake_current_user
 
 def test_list_frame_archives_exception():

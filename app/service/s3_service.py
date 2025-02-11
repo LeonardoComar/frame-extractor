@@ -1,17 +1,16 @@
-# app/service/s3_service.py
 from botocore.exceptions import BotoCoreError, ClientError
 from fastapi import HTTPException
-from app.core.config import settings  # Importação das configurações centralizadas
+from app.core.config import settings
 from app.repository.s3_repository import get_s3_client
 
 def upload_to_s3(file_path: str, s3_key: str, bucket_name: str = settings.AWS_S3_BUCKET_NAME) -> str:
     try:
-        # Configurar cliente S3 usando as variáveis do settings
+        # Configurar cliente S3
         s3_client = get_s3_client()
         # Fazer upload do arquivo
         s3_client.upload_file(file_path, bucket_name, s3_key)
 
-        # Construir URL conforme configurações
+        # Construir URL
         file_url = f"{settings.AWS_S3_PUBLIC_URL}/{bucket_name}/{s3_key}"
         
         return file_url

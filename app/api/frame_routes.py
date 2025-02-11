@@ -1,4 +1,3 @@
-# app/api/frame_routes.py
 from fastapi import APIRouter, UploadFile, Form, Depends, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
 from app.service.frame_processor_service import process_video

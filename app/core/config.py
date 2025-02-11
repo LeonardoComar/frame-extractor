@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     AWS_SES_ENDPOINT: str
     FRONTEND_URL: str
     FERNET_KEY: str
+    ADMIN_PASSWORD: str
 
     class Config:
         env_file = ".env"

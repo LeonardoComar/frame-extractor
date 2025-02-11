@@ -1,4 +1,3 @@
-# app/service/frame_processor_service.py
 import os
 import ffmpeg
 import zipfile
@@ -59,7 +58,6 @@ def process_video(file, interval, username, background_tasks):
             # Retornar o URL do arquivo salvo
             return file_url
     except HTTPException as e:
-        # Re-passando exceções HTTP específicas
         raise e
     except Exception as e:
         raise HTTPException(

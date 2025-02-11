@@ -38,7 +38,6 @@ class ProcessVideoInput(BaseModel):
     @classmethod
     def as_form(cls, file: UploadFile = File(...), interval: int = Form(...)):
         try:
-            # Validação manual para integração com formulário
             cls.validate_file_extension(file)
             cls.validate_interval_value(interval)
             cls.validate_file_size(file)

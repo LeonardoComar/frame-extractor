@@ -51,7 +51,6 @@ jobs:
 
       - name: Executar testes com pytest
         env:
-          # Variáveis de ambiente conforme o seu arquivo .env
           SECRET_KEY: u-jc5eZwygw58Howrf2OdFjJLpUwUNQXDhZEvZFrmJw
           ALGORITHM: HS256
           ACCESS_TOKEN_EXPIRE_MINUTES: 60
