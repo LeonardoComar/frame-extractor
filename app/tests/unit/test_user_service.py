@@ -3,9 +3,9 @@ from fastapi import HTTPException
 from app.service.user_service import UserService
 from app.repository.dynamodb_repository import add_user, get_user_by_username, update_user, get_all_users, get_user_by_email_hash
 from app.core.jwt import create_access_token, verify_access_token
-from app.domain.user_model import User, UserCreate
+from app.domain.user_model import UserCreate
 from unittest.mock import patch, MagicMock
-from app.core.cryptography import decrypt_email, encrypt_email
+from app.core.cryptography import encrypt_email
 import hashlib
 
 user_service = UserService()
