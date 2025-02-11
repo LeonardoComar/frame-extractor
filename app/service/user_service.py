@@ -1,4 +1,3 @@
-# app/service/auth_service.py
 import bcrypt
 from app.domain.user_model import User, UserCreate
 from app.core.jwt import create_access_token, verify_access_token
@@ -7,7 +6,7 @@ from app.core.config import settings
 from app.service.email_ses_service import send_reset_password_email_ses, send_active_user_email_ses, send_inactive_user_email_ses
 from app.core.cryptography import encrypt_email, decrypt_email, get_email_hash
 
-class AuthService:
+class UserService:
     @staticmethod
     def get_password_hash(password: str) -> str:
         salt = bcrypt.gensalt()
@@ -29,7 +28,7 @@ class AuthService:
         if get_user_by_email_hash(email_hash):
             raise ValueError("Email já está em uso")
               
-                # Criptografa o email e gera o hash
+        # Criptografa o email e gera o hash
         encrypted_email = encrypt_email(email)
         hashed_password = self.get_password_hash(user_data.password)
         
@@ -49,7 +48,7 @@ class AuthService:
         if not user:
             raise ValueError("Credenciais inválidas")
         
-        # Se o status do usuário for diferente de 'active', retorna a mensagem específica
+        # Se o status do usuário for diferente de 'active', retorna erro
         if user.get("status") != "active": 
             raise ValueError("O usuário está inativo! Contatar o administrador ou o suporte para mais informações")
         
@@ -57,7 +56,7 @@ class AuthService:
         if not self.verify_password(password, user.get("password")):
             raise ValueError("Credenciais inválidas")
         
-        # Cria o token de acesso e o retorna
+        # Cria o token de acesso
         token = create_access_token(data={
             "sub": user["username"],
             "role": user.get("role", "user_level_1")

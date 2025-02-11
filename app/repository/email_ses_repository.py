@@ -1,4 +1,3 @@
-# app/repository/email_ses_repository.py
 import boto3
 from botocore.exceptions import ClientError
 from app.core.config import settings

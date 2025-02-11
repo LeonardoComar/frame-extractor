@@ -1,4 +1,3 @@
-# app/repository/s3_repository.py
 import boto3
 from botocore.exceptions import ClientError
 from app.core.config import settings
@@ -23,13 +22,11 @@ def create_s3_bucket():
     bucket_name = settings.AWS_S3_BUCKET_NAME
     
     try:
-        # Tenta criar o bucket (com configuração de região)
         s3_client.create_bucket(
             Bucket=bucket_name
         )
         print(f"Bucket S3 '{bucket_name}' criado com sucesso")
         
-        # Configuração adicional para versionamento (opcional)
         s3_client.put_bucket_versioning(
             Bucket=bucket_name,
             VersioningConfiguration={'Status': 'Enabled'}

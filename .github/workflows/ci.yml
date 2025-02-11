@@ -51,7 +51,6 @@ jobs:
 
       - name: Executar testes com pytest
         env:
-          # Variáveis de ambiente conforme o seu arquivo .env
           SECRET_KEY: u-jc5eZwygw58Howrf2OdFjJLpUwUNQXDhZEvZFrmJw
           ALGORITHM: HS256
           ACCESS_TOKEN_EXPIRE_MINUTES: 60
@@ -65,6 +64,7 @@ jobs:
           AWS_SES_ENDPOINT: http://localhost:4566
           FRONTEND_URL: http://localhost:3000
           FERNET_KEY: wuTxc1Jont1Hr315LGmcCSLPEg_OG7ETvM1EtP6I6p8=
+          ADMIN_PASSWORD: admin_password
         run: |
           pytest app/tests --cov=app --cov-report=xml
 

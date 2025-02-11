@@ -1,5 +1,5 @@
 import pytest
-from botocore.exceptions import ClientError  # Usaremos ClientError para simular erro
+from botocore.exceptions import ClientError
 from fastapi import HTTPException
 from app.service.s3_service import upload_to_s3, list_user_frame_archives, delete_s3_file
 from app.core.config import settings

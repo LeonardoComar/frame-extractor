@@ -2,29 +2,24 @@ import os
 from io import BytesIO
 import pytest
 from fastapi.testclient import TestClient
-from app.main import app  # O seu arquivo principal que configura o app com o lifespan
+from app.main import app
 from app.core.auth import get_current_user
 from app.core.cryptography import get_email_hash, encrypt_email
 
-# --- Dependência de autenticação para teste ---
 def override_get_current_user():
     email = "testuser@example.com"
     email_encrypt = encrypt_email(email)
     email_hash = get_email_hash(email)
     return {"sub": "testuser", "email": email_encrypt, "email_hash": email_hash, "role": "administrator"}
 
-# Substitui a dependência get_current_user para que o endpoint funcione
 app.dependency_overrides[get_current_user] = override_get_current_user
 
-# Função dummy para simular a busca do usuário no banco
 def dummy_get_user_by_username(username: str):
     email = "testuser@example.com"
     email_encrypt = encrypt_email(email)
     email_hash = get_email_hash(email)
     return {"username": username, "email": email_encrypt, "email_hash": email_hash}
 
-# Antes de executar o teste, sobrescrevemos a função usada no serviço
-# Importamos o módulo onde a função é usada (no seu caso, em app/service/frame_processor_service.py)
 import app.service.frame_processor_service as fps
 fps.get_user_by_username = dummy_get_user_by_username
 
@@ -47,11 +42,10 @@ def test_process_video_integration_success(client):
 
     # Prepare os dados da requisição: o arquivo e o intervalo (maior que 0)
     files = {"file": ("sample_video.mp4", BytesIO(video_bytes), "video/mp4")}
-    data = {"interval": 5}  # Use um intervalo pequeno para garantir a extração de frames
+    data = {"interval": 5}
 
     response = client.post("/api/process-video", files=files, data=data)
 
-    # Se a resposta for diferente de 200 e estivermos no CI, ignora (ou marca como xfail/skip) o teste
     if response.status_code != 200:
         if os.environ.get("GITHUB_ACTIONS") == "true":
             pytest.skip(
@@ -61,7 +55,6 @@ def test_process_video_integration_success(client):
         else:
             pytest.fail(f"Resposta inesperada: {response.text}")
 
-    # Se chegou aqui, temos status 200
     json_data = response.json()
     assert json_data.get("message") == "Arquivo processado e salvo com sucesso!"
     assert "file_url" in json_data, "A resposta não contém 'file_url'"
@@ -83,7 +76,6 @@ def test_process_video_integration_invalid_interval(client):
     """
     Testa que o endpoint rejeita intervalos inválidos (por exemplo, 0 ou negativo).
     """
-    # Assuma que o arquivo de vídeo de teste existe
     video_path = os.path.join(os.path.dirname(__file__), "sample_video.mp4")
     assert os.path.exists(video_path), "Arquivo de teste sample_video.mp4 não encontrado"
 

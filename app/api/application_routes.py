@@ -1,4 +1,3 @@
-# app/api/routes.py
 from fastapi import APIRouter
 from .frame_routes import router as frame_router
 from .user_routes import router as user_router

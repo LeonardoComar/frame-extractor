@@ -27,7 +27,7 @@ client = TestClient(app)
 # ================================
 
 def test_register_success():
-    with patch("app.api.user_routes.auth_service.create_user") as mock_create:
+    with patch("app.api.user_routes.user_service.create_user") as mock_create:
         # Simula que a criação do usuário ocorreu sem erros.
         response = client.post(
             "/api/register",
@@ -47,7 +47,7 @@ def test_register_success():
         mock_create.assert_called_once_with(expected_user_data)
 
 def test_register_value_error():
-    with patch("app.api.user_routes.auth_service.create_user") as mock_create:
+    with patch("app.api.user_routes.user_service.create_user") as mock_create:
         mock_create.side_effect = ValueError("Usuário já está em uso")
         response = client.post(
             "/api/register",
@@ -61,7 +61,7 @@ def test_register_value_error():
 # ================================
 
 def test_login_success():
-    with patch("app.api.user_routes.auth_service.authenticate_user") as mock_auth:
+    with patch("app.api.user_routes.user_service.authenticate_user") as mock_auth:
         mock_auth.return_value = "dummy_token"
         response = client.post(
             "/api/login",
@@ -74,7 +74,7 @@ def test_login_success():
         mock_auth.assert_called_once_with("foo", "bar")
 
 def test_login_value_error():
-    with patch("app.api.user_routes.auth_service.authenticate_user") as mock_auth:
+    with patch("app.api.user_routes.user_service.authenticate_user") as mock_auth:
         mock_auth.side_effect = ValueError("Credenciais inválidas")
         response = client.post(
             "/api/login",
@@ -88,7 +88,7 @@ def test_login_value_error():
 # ================================
 
 def test_list_users_success():
-    with patch("app.api.user_routes.auth_service.get_all_users") as mock_get:
+    with patch("app.api.user_routes.user_service.get_all_users") as mock_get:
         mock_get.return_value = [{"username": "foo"}, {"username": "bar"}]
         response = client.get("/api/users", headers={"Authorization": "Bearer dummy_token"})
         assert response.status_code == status.HTTP_200_OK
@@ -96,7 +96,7 @@ def test_list_users_success():
         mock_get.assert_called_once()
 
 def test_list_users_exception():
-    with patch("app.api.user_routes.auth_service.get_all_users") as mock_get:
+    with patch("app.api.user_routes.user_service.get_all_users") as mock_get:
         mock_get.side_effect = Exception("Erro no banco")
         response = client.get("/api/users", headers={"Authorization": "Bearer dummy_token"})
         assert response.status_code == 500
@@ -107,21 +107,21 @@ def test_list_users_exception():
 # ================================
 
 def test_activate_user_success():
-    with patch("app.api.user_routes.auth_service.update_user_status") as mock_update:
+    with patch("app.api.user_routes.user_service.update_user_status") as mock_update:
         response = client.post("/api/users/someuser/activate", headers={"Authorization": "Bearer dummy_token"})
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {"message": "Usuário someuser ativado com sucesso"}
         mock_update.assert_called_once_with("someuser", "active")
 
 def test_activate_user_value_error():
-    with patch("app.api.user_routes.auth_service.update_user_status") as mock_update:
+    with patch("app.api.user_routes.user_service.update_user_status") as mock_update:
         mock_update.side_effect = ValueError("Usuário não encontrado")
         response = client.post("/api/users/someuser/activate", headers={"Authorization": "Bearer dummy_token"})
         assert response.status_code == 404
         assert "Usuário não encontrado" in response.json()["detail"]
 
 def test_activate_user_exception():
-    with patch("app.api.user_routes.auth_service.update_user_status") as mock_update:
+    with patch("app.api.user_routes.user_service.update_user_status") as mock_update:
         mock_update.side_effect = Exception("Erro no update")
         response = client.post("/api/users/someuser/activate", headers={"Authorization": "Bearer dummy_token"})
         assert response.status_code == 500
@@ -132,21 +132,21 @@ def test_activate_user_exception():
 # ================================
 
 def test_deactivate_user_success():
-    with patch("app.api.user_routes.auth_service.update_user_status") as mock_update:
+    with patch("app.api.user_routes.user_service.update_user_status") as mock_update:
         response = client.post("/api/users/someuser/deactivate", headers={"Authorization": "Bearer dummy_token"})
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {"message": "Usuário someuser inativado com sucesso"}
         mock_update.assert_called_once_with("someuser", "inactive")
 
 def test_deactivate_user_value_error():
-    with patch("app.api.user_routes.auth_service.update_user_status") as mock_update:
+    with patch("app.api.user_routes.user_service.update_user_status") as mock_update:
         mock_update.side_effect = ValueError("Usuário não encontrado")
         response = client.post("/api/users/someuser/deactivate", headers={"Authorization": "Bearer dummy_token"})
         assert response.status_code == 404
         assert "Usuário não encontrado" in response.json()["detail"]
 
 def test_deactivate_user_exception():
-    with patch("app.api.user_routes.auth_service.update_user_status") as mock_update:
+    with patch("app.api.user_routes.user_service.update_user_status") as mock_update:
         mock_update.side_effect = Exception("Erro no update")
         response = client.post("/api/users/someuser/deactivate", headers={"Authorization": "Bearer dummy_token"})
         assert response.status_code == 500
@@ -157,7 +157,7 @@ def test_deactivate_user_exception():
 # ================================
 
 def test_forgot_password_success():
-    with patch("app.api.user_routes.auth_service.send_password_reset_email") as mock_send:
+    with patch("app.api.user_routes.user_service.send_password_reset_email") as mock_send:
         mock_send.return_value = None  # Simula sucesso
         response = client.post("/api/forgot-password", json={"email": "foo@example.com"})
         assert response.status_code == status.HTTP_200_OK
@@ -165,14 +165,14 @@ def test_forgot_password_success():
         mock_send.assert_called_once_with("foo@example.com", ANY)  # ANY se não queremos verificar o background_tasks
 
 def test_forgot_password_value_error():
-    with patch("app.api.user_routes.auth_service.send_password_reset_email") as mock_send:
+    with patch("app.api.user_routes.user_service.send_password_reset_email") as mock_send:
         mock_send.side_effect = ValueError("Usuário não encontrado")
         response = client.post("/api/forgot-password", json={"email": "notfound@example.com"})
         assert response.status_code == 404
         assert "Usuário não encontrado" in response.json()["detail"]
 
 def test_forgot_password_exception():
-    with patch("app.api.user_routes.auth_service.send_password_reset_email") as mock_send:
+    with patch("app.api.user_routes.user_service.send_password_reset_email") as mock_send:
         mock_send.side_effect = Exception("Erro ao enviar email")
         response = client.post("/api/forgot-password", json={"email": "foo@example.com"})
         assert response.status_code == 500
@@ -183,7 +183,7 @@ def test_forgot_password_exception():
 # ================================
 
 def test_reset_password_success():
-    with patch("app.api.user_routes.auth_service.reset_password") as mock_reset:
+    with patch("app.api.user_routes.user_service.reset_password") as mock_reset:
         mock_reset.return_value = None  # Simula sucesso
         response = client.post("/api/reset-password", json={"token": "dummy_token", "new_password": "newPass123"})
         assert response.status_code == status.HTTP_200_OK
@@ -191,14 +191,14 @@ def test_reset_password_success():
         mock_reset.assert_called_once_with("dummy_token", "newPass123")
 
 def test_reset_password_value_error():
-    with patch("app.api.user_routes.auth_service.reset_password") as mock_reset:
+    with patch("app.api.user_routes.user_service.reset_password") as mock_reset:
         mock_reset.side_effect = ValueError("Token inválido")
         response = client.post("/api/reset-password", json={"token": "bad_token", "new_password": "newPass123"})
         assert response.status_code == 400
         assert "Token inválido" in response.json()["detail"]
 
 def test_reset_password_exception():
-    with patch("app.api.user_routes.auth_service.reset_password") as mock_reset:
+    with patch("app.api.user_routes.user_service.reset_password") as mock_reset:
         mock_reset.side_effect = Exception("Erro no reset")
         response = client.post("/api/reset-password", json={"token": "any_token", "new_password": "newPass123"})
         assert response.status_code == 500

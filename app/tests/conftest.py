@@ -8,7 +8,6 @@ def setup_app_dependencies():
     """
     Configura dependências como tabelas DynamoDB, bucket S3 e SES Identity antes dos testes.
     """
-    # Configure os recursos necessários antes dos testes
     create_users_table()
     create_s3_bucket()
     verify_ses_email_identity()

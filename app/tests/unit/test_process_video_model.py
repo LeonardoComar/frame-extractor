@@ -1,5 +1,3 @@
-# test_process_video_model.py
-
 import io
 import pytest
 from fastapi import UploadFile, HTTPException
